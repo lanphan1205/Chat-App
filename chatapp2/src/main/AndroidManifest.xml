@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.chatapp">
+    package="com.example.chatapp2">
 
     <application
         android:allowBackup="true"
@@ -9,26 +9,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ChatApp">
-        <activity android:name=".StartActivity"
-            android:label="Chat App">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity android:name=".ChatListActivity"
-            android:label="Chat List"
-            android:parentActivityName=".StartActivity">
-            <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".StartActivity"/>
-        </activity>
-        <activity android:name=".ChatMessagesActivity"
-            android:label="Messages"
-            android:parentActivityName=".ChatListActivity">
-
-            <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ChatListActivity"/>
         </activity>
     </application>
 

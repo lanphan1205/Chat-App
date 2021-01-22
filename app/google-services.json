@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "171717514037",
+    "project_id": "fir-yolo-33a52",
+    "storage_bucket": "fir-yolo-33a52.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:171717514037:android:6d35e1a54139bbc652b27c",
+        "android_client_info": {
+          "package_name": "com.example.chatapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "171717514037-tf4ru5mqheet7e6hmh81nt3941ink3kp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZrwTILHjghcwQijAquYnLI8fXbAWH-2Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "171717514037-tf4ru5mqheet7e6hmh81nt3941ink3kp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:171717514037:android:fc20c05d7334cf9152b27c",
+        "android_client_info": {
+          "package_name": "com.example.firebaseyolo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "171717514037-tf4ru5mqheet7e6hmh81nt3941ink3kp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZrwTILHjghcwQijAquYnLI8fXbAWH-2Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "171717514037-tf4ru5mqheet7e6hmh81nt3941ink3kp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

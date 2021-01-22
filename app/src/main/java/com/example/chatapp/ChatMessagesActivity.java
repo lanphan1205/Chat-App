@@ -1,23 +1,31 @@
 package com.example.chatapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import com.google.gson.Gson;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,10 +43,9 @@ import io.agora.rtm.RtmMediaOperationProgress;
 import io.agora.rtm.RtmMessage;
 import io.agora.rtm.SendMessageOptions;
 
-public class MainActivity extends AppCompatActivity {
-
+public class ChatMessagesActivity extends AppCompatActivity {
     // Context
-    private Context mContext = MainActivity.this;
+    private Context mContext = ChatMessagesActivity.this;
 
     // UI
     private Button buttonSendMessage;
@@ -50,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
 
     // Data
     private ArrayList<Message> messageList = new ArrayList<>();
+    private String userId;
+    private String chatId;
 
     // Rtm Sdk
     private RtmClient mRtmClient;
@@ -114,15 +123,38 @@ public class MainActivity extends AppCompatActivity {
             String msg = rtmMessage.getText();
             String fromMemberUserId = fromMember.getUserId();
             Log.d(LOG_CAT, "Message received from Channel Member Id "  +"(" + fromMemberUserId + ")" + ": " + msg);
-
+            Message message = new Message(fromMemberUserId, msg, new Timestamp(System.currentTimeMillis()));
+            messageList.add(message);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-//                    messageList.add(new Message(fromMemberUserId, msg));
-//                    Log.d(LOG_CAT, messageList.toString());
                     mAdapter.notifyDataSetChanged();
                 }
             });
+
+//                    Log.d(LOG_CAT, messageList.toString());
+
+
+            //TODO Prepare Message Object
+
+            // TODO Get the chatroom Id here: WF1ZEndb2NR9ifxCqRI0
+            // TODO Write the this document
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("chatrooms").document("WF1ZEndb2NR9ifxCqRI0").collection("messages")
+                    .add(message)
+                    .addOnSuccessListener(new OnSuccessListener() {
+                        @Override
+                        public void onSuccess(Object o) {
+                            Log.d(LOG_CAT, "DocumentSnapshot successfully written!" + " Result: " + o.toString());
+                        }
+
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(LOG_CAT, "Error writing document", e);
+                        }
+                    });
         }
         @Override
         public void onImageMessageReceived(RtmImageMessage rtmImageMessage, RtmChannelMember rtmChannelMember) {
@@ -154,26 +186,54 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.message_list);
 
         // Data
 //        String[] msgs = {"Hi \n there!", "How \n are \n you?", "It's \n been \n a while..", "How \n is \n Max?",
 //        "I have been \n really busy \n  these days \n so \n it's so hard \n to catch up", "I have been \n growing a start up \n that can really \n be something.."};
 //        messageList.addAll(Arrays.asList(msgs));
+        Intent intent = getIntent();
+        userId = intent.getStringExtra(ChatListActivity.USER_ID);
+        chatId = intent.getStringExtra(ChatListActivity.CHAT_ID);
+        Log.d(LOG_CAT, userId);
+        Log.d(LOG_CAT, chatId);
 
-        // Set up Recycler View & set Adapter
+        // Read Data from Database
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("chatrooms").document(chatId).collection("messages")
+                .orderBy("timeStamp", Query.Direction.ASCENDING)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(LOG_CAT, "Getting documents successful");
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Message message = document.toObject(Message.class);
+                                messageList.add(message);
+                            }
 
-        mRecyclerView = findViewById(R.id.recyclerViewMessageOpen);
-        mAdapter = new MessageListAdapter(this, messageList);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+                            // Set up Recycler View & set Adapter
+
+                            mRecyclerView = findViewById(R.id.recyclerViewMessageOpen);
+                            mAdapter = new MessageListAdapter(mContext, messageList);
+                            mRecyclerView.setAdapter(mAdapter);
+                            mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+                        } else {
+                            Log.d(LOG_CAT, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
+
 
         // Start Rtm
         init();
-        mRtmClient.login(null, getString(R.string.local_uid), new ResultCallback<Void>() {
+        mRtmClient.login(null, userId, new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(LOG_CAT, "Log in Success!");
@@ -271,16 +331,39 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(LOG_CAT, "Send Message Channel Success. Message: " + msg);
+                Message message = new Message(userId, msg, new Timestamp(System.currentTimeMillis()));
+                messageList.add(message);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-//                        messageList.add(new Message(getString(R.string.local_uid), msg));
-//                        Log.d(LOG_CAT, messageList.toString());
                         mAdapter.notifyDataSetChanged();
-
                         editTextMessageMultiLine.setText("");
                     }
                 });
+
+
+//                        Log.d(LOG_CAT, messageList.toString());
+
+                //TODO Prepare Message Object
+
+                // TODO Get the chatroom Id here: WF1ZEndb2NR9ifxCqRI0
+                // TODO Write the this document
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("chatrooms").document("WF1ZEndb2NR9ifxCqRI0").collection("messages")
+                        .add(message)
+                        .addOnSuccessListener(new OnSuccessListener() {
+                            @Override
+                            public void onSuccess(Object o) {
+                                Log.d(LOG_CAT, "DocumentSnapshot successfully written!" + " Result: " + o.toString());
+                            }
+
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                            Log.w(LOG_CAT, "Error writing document", e);
+                            }
+                        });
             }
 
             @Override
@@ -305,6 +388,10 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
+    public String getUserId() { return this.userId; }
+
+    public String getChatId() { return this.chatId; }
 
     @Override
     protected void onDestroy() {

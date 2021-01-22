@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ChatApp</string>
+    <string name="local_uid">000</string>
+    <string name="remote_uid">001</string>
 </resources>

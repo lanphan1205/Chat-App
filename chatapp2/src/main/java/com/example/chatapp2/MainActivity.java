@@ -1,4 +1,4 @@
-package com.example.chatapp;
+package com.example.chatapp2;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,7 +17,6 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -118,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-//                    messageList.add(new Message(fromMemberUserId, msg));
+                    messageList.add(new Message(fromMemberUserId, msg));
 //                    Log.d(LOG_CAT, messageList.toString());
                     mAdapter.notifyDataSetChanged();
                 }
@@ -150,8 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String APP_ID = "d6bb57ca85614d6d8e2f48a6fa6eba6c";
 
-    public static final String LOG_CAT = "chatapp.Logcat";
-
+    public static final String LOG_CAT = "chatapp2.Logcat";
 
 
     @Override
@@ -274,7 +272,7 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-//                        messageList.add(new Message(getString(R.string.local_uid), msg));
+                        messageList.add(new Message(getString(R.string.local_uid), msg));
 //                        Log.d(LOG_CAT, messageList.toString());
                         mAdapter.notifyDataSetChanged();
 
