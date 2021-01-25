@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class Message {
+    // TODO Should match the field of the document in the "messages" collection
+
     private String sender;
     private String message;
     private Date timeStamp;

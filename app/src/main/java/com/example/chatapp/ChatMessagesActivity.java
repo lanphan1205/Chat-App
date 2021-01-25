@@ -59,6 +59,7 @@ public class ChatMessagesActivity extends AppCompatActivity {
     private ArrayList<Message> messageList = new ArrayList<>();
     private String userId;
     private String chatId;
+    private String chatName;
 
     // Rtm Sdk
     private RtmClient mRtmClient;
@@ -128,7 +129,9 @@ public class ChatMessagesActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
                     mAdapter.notifyDataSetChanged();
+                    mRecyclerView.scrollToPosition(messageList.size() - 1);
                 }
             });
 
@@ -199,8 +202,10 @@ public class ChatMessagesActivity extends AppCompatActivity {
         Intent intent = getIntent();
         userId = intent.getStringExtra(ChatListActivity.USER_ID);
         chatId = intent.getStringExtra(ChatListActivity.CHAT_ID);
+        chatName = intent.getStringExtra(ChatListActivity.CHAT_NAME);
         Log.d(LOG_CAT, userId);
         Log.d(LOG_CAT, chatId);
+        Log.d(LOG_CAT, chatName);
 
         // Read Data from Database
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -221,8 +226,12 @@ public class ChatMessagesActivity extends AppCompatActivity {
 
                             mRecyclerView = findViewById(R.id.recyclerViewMessageOpen);
                             mAdapter = new MessageListAdapter(mContext, messageList);
+
+
                             mRecyclerView.setAdapter(mAdapter);
                             mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+                            mRecyclerView.scrollToPosition(messageList.size() - 1);
+
                         } else {
                             Log.d(LOG_CAT, "Error getting documents: ", task.getException());
                         }
@@ -237,6 +246,10 @@ public class ChatMessagesActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(LOG_CAT, "Log in Success!");
+
+                createChannel();
+
+                joinChannel();
             }
 
             @Override
@@ -245,9 +258,7 @@ public class ChatMessagesActivity extends AppCompatActivity {
             }
         });
 
-        createChannel();
 
-        joinChannel();
 
 
         // Other UI
@@ -260,9 +271,9 @@ public class ChatMessagesActivity extends AppCompatActivity {
                 String msg = editTextMessageMultiLine.getText().toString();
                 Log.d(LOG_CAT, "Send Button clicked. Message: " + msg);
                 sendChannelMessage(msg);
-
             }
         });
+
 
     }
 
@@ -337,6 +348,7 @@ public class ChatMessagesActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         mAdapter.notifyDataSetChanged();
+                        mRecyclerView.scrollToPosition(messageList.size() - 1);
                         editTextMessageMultiLine.setText("");
                     }
                 });

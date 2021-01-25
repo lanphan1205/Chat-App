@@ -2,4 +2,7 @@
     <string name="app_name">ChatApp</string>
     <string name="local_uid">000</string>
     <string name="remote_uid">001</string>
+    <string name="action_logout">Log out</string>
+    <string name="chat_list_title">Chats List</string>
+    <string name="add_friends_title">Add Friends</string>
 </resources>

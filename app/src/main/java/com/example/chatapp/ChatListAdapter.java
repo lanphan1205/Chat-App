@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatViewHolder>{
 
     private LayoutInflater mInflater;
-    private ArrayList<Chat> data = new ArrayList<>();
+    private ArrayList<Chat> data;
     private Context context;
 
     public ChatListAdapter(Context context, ArrayList<Chat> data) {
@@ -33,7 +33,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatVi
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
         Chat chat = data.get(position);
-        String chatName = chat.getChatId();
+        String chatName = chat.getChatName();
         holder.textViewChatName.setText(chatName);
         holder.mChat = chat;
     }
@@ -57,6 +57,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatVi
                     Intent intent = new Intent(context, ChatMessagesActivity.class);
                     intent.putExtra(ChatListActivity.USER_ID, mChat.getUserId());
                     intent.putExtra(ChatListActivity.CHAT_ID, mChat.getChatId());
+                    intent.putExtra(ChatListActivity.CHAT_NAME, mChat.getChatName());
                     context.startActivity(intent);
                 }
             });

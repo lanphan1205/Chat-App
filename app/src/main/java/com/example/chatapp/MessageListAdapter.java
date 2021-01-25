@@ -25,6 +25,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         mInflater = LayoutInflater.from(context);
         this.context = context;
         this.data = data;
+        setHasStableIds(true);
     }
 
     @NonNull
@@ -80,6 +81,16 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     class MessageViewHolder extends RecyclerView.ViewHolder{
